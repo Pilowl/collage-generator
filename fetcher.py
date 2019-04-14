@@ -1,11 +1,13 @@
 import urllib.request as urllib
 import json
+import os, shutil, time
 from bs4 import BeautifulSoup
 def get_soup(url):
     return BeautifulSoup(urllib.urlopen(urllib.Request(url, headers={'User-Agent': user_agent_header})), features="html5lib")
 
 user_agent_header = 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/43.0.2357.134 Safari/537.36'
 
+src_folder = "sources/"
 
 def get_image_page_content(content):
     content = '+'.join(content.split())
@@ -29,4 +31,33 @@ def parse_image_results(url, results):
         images.append((link, Type))
     return images
 
-print(get_image_page_content('flying birds'))
+def download_image(name, url_ext):
+    if url_ext[1] != "":
+        name = str(name) + "." + url_ext[1]
+    else:
+        name = str(name)
+    urllib.urlretrieve(url_ext[0], src_folder + name)   
+
+def create_src_dir():
+    print("Recreating image source directory..")
+    if os.path.isdir(src_folder):
+        shutil.rmtree(src_folder)
+    os.makedirs(src_folder)
+
+def save_images_by_keyword(keyword):
+    urls = get_image_page_content(keyword)
+    create_src_dir()
+    size = len(urls)
+    final_size = size
+    for i, tupl in enumerate(urls):
+        print("Downloading %d image out of %d.." % (i+1, size))
+        try:
+            download_image(i, tupl)
+        except Exception as e:
+            print("Failed to download from " + tupl[0])
+            final_size -= 1
+            print(e)
+    print("Succesfuly downloaded %d pictures of %d" % (final_size, size))
+
+
+save_images_by_keyword("Flying birds")
