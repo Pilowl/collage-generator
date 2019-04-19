@@ -10,6 +10,7 @@ user_agent_header = 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHT
 src_folder = "sources/"
 
 def get_image_page_content(content):
+    # splitting keyword into google image GET request
     content = '+'.join(content.split())
     url = 'https://www.google.lv/search?q=' + content + '&source=lnms&tbm=isch&sa=X&sqi=2'
     print("Requesting for all image results..")
@@ -20,6 +21,7 @@ def get_image_page_content(content):
     return parse_image_results(url, resp.read())
 
 def parse_image_results(url, results):
+    # parsing image out of results using soup
     images = []
     soup = get_soup(url)
     print("Finding all images on the page..")
@@ -32,6 +34,7 @@ def parse_image_results(url, results):
     return images
 
 def download_image(name, url_ext):
+
     if url_ext[1] != "":
         name = str(name) + "." + url_ext[1]
     else:
@@ -60,4 +63,4 @@ def save_images_by_keyword(keyword):
     print("Succesfuly downloaded %d pictures of %d" % (final_size, size))
 
 
-save_images_by_keyword("Flying birds")
+save_images_by_keyword("fl brds")
