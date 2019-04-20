@@ -48,7 +48,9 @@ def create_src_dir():
     os.makedirs(src_folder)
 
 def save_images_by_keyword(keyword):
-    urls = get_image_page_content(keyword)
+    urls = []
+    for word in keyword:
+        urls += get_image_page_content(word)
     create_src_dir()
     size = len(urls)
     final_size = size
@@ -63,4 +65,4 @@ def save_images_by_keyword(keyword):
     print("Succesfuly downloaded %d pictures of %d" % (final_size, size))
 
 
-save_images_by_keyword("fl brds")
+save_images_by_keyword(["Art", "Amon Amath", "Minecraft", "Java", "Zeal and Ardor", "Cola", "Aliens", "Mafia 2", "Mafia", "HZ"])

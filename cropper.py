@@ -2,13 +2,15 @@ from skimage import io
 import skimage.util as utils
 from skimage.viewer import ImageViewer 
 from skimage.measure import compare_ssim as ssim
+from skimage.measure import compare_mse as mse
 import skimage.transform as sk_transform
 import os
+import numpy as np
 
 # import skimage.utils to use util.img_as_float for merging
 # from skimage.measure import compare_ssim as ssim for ssim comparison? 
 
-chunk_size = 25
+chunk_size = 5
 
 def show_img(image):
     viewer = ImageViewer(image)
@@ -36,6 +38,19 @@ def get_src_files():
             files.append(os.path.join(r, file))
     return files
 
+def remove_puzzle(L, puzzle):
+    ind = 0
+    size = len(L)
+    while ind != size and not np.array_equal(L[ind], puzzle):
+        ind += 1
+    if ind != size:
+        L.pop(ind)
+    else:
+        print("Cannot remove puzzle. Not found.")
+
+def compare_imgs(im1, im2):
+    return ssim(im1, im2, multichannel = True) + mse(best_img, src_chunk)
+
 image = io.imread("image.jpg")
 
 min_dim = min(len(image), len(image[0]))
@@ -51,17 +66,17 @@ iters = x_iter * y_iter
 removed_items = 0
 for i in range(y_iter):
     for j in range(x_iter):
-        print("Getting %d chunk of %d" % (j + j*10 + 1, iters))
+        print("Getting %d chunk of %d" % (j + i*x_iter + 1, iters))
         wstart = j*chunk_size
-        wend = j*chunk_size + 25
+        wend = j*chunk_size + chunk_size
         hstart = i*chunk_size
-        hend = i*chunk_size + 25
+        hend = i*chunk_size + chunk_size
         src_chunk = image[hstart:hend,wstart:wend]
         best_img = puzzle_imgs[0]
-        best_score = ssim(best_img, src_chunk, multichannel = True)
+        best_score = compare_imgs(best_img, src_chunk)
         for im in puzzle_imgs:
             try:
-                score = ssim(im, src_chunk, multichannel = True)
+                score = compare_imgs(im, src_chunk)
                 if score > best_score:
                     best_img = im
                     best_score = score
@@ -69,9 +84,12 @@ for i in range(y_iter):
                 print(im)
                 print("Failed to read image. %s" % e)
                 removed_items += 1
-                puzzle_imgs.remove(im)
+                remove_puzzle(puzzle_imgs, im)
                 print("Removed %d item from list" % removed_items)
         image[hstart:hend, wstart:wend] = best_img
 
+
+
 print("Result is ready. Couldn't process %d images." % removed_items)
 show_img(image)
+io.imsave("result.jpg", image)
