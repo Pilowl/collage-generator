@@ -49,7 +49,7 @@ def remove_puzzle(L, puzzle):
         print("Cannot remove puzzle. Not found.")
 
 def compare_imgs(im1, im2):
-    return ssim(im1, im2, multichannel = True) + mse(best_img, src_chunk)
+    return (ssim(im1, im2, multichannel=True) + mse(im1, im2))
 
 image = io.imread("image.jpg")
 
@@ -73,8 +73,8 @@ for i in range(y_iter):
         hend = i*chunk_size + chunk_size
         src_chunk = image[hstart:hend,wstart:wend]
         best_img = puzzle_imgs[0]
-        best_score = compare_imgs(best_img, src_chunk)
-        for im in puzzle_imgs:
+        best_score = 0
+        for im in puzzle_imgs:    
             try:
                 score = compare_imgs(im, src_chunk)
                 if score > best_score:
