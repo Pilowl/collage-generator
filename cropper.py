@@ -10,7 +10,7 @@ import numpy as np
 # import skimage.utils to use util.img_as_float for merging
 # from skimage.measure import compare_ssim as ssim for ssim comparison? 
 
-chunk_size = 5
+chunk_size = 15
 
 def show_img(image):
     viewer = ImageViewer(image)
@@ -91,5 +91,5 @@ for i in range(y_iter):
 
 
 print("Result is ready. Couldn't process %d images." % removed_items)
-show_img(image)
 io.imsave("result.jpg", image)
+show_img(image)
